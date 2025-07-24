@@ -1,36 +1,112 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next.js Authentication API
+
+This project includes a complete authentication system with login, registration, and protected routes.
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js (v18 or later recommended)
+- npm or yarn
+
+### Installation
+
+1. Install dependencies:
+```bash
+npm install
+# or
+yarn install
+```
+
+2. Set up the database:
+```bash
+npm run prisma:generate
+npm run prisma:migrate
+```
+
+3. Seed the database with an admin user:
+```bash
+npm run db:seed
+```
+This will create an admin user with:
+- Email: admin@gmail.com
+- Password: abcd123@
+
+### Running the Development Server
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The server will start at http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## API Endpoints
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Authentication
 
-## Learn More
+#### Register a new user
+```
+POST /api/auth/register
+```
+Body:
+```json
+{
+  "email": "user@example.com",
+  "password": "password123",
+  "name": "User Name"
+}
+```
 
-To learn more about Next.js, take a look at the following resources:
+#### Login
+```
+POST /api/auth/login
+```
+Body:
+```json
+{
+  "email": "admin@gmail.com",
+  "password": "abcd123@"
+}
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Protected Routes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+These routes require authentication via Bearer token in the Authorization header.
 
-## Deploy on Vercel
+#### Get current user profile
+```
+GET /api/protected/user
+```
+Headers:
+```
+Authorization: Bearer your_jwt_token
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Admin Routes
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+These routes require admin role.
+
+#### Get all users (admin only)
+```
+GET /api/admin/users
+```
+Headers:
+```
+Authorization: Bearer your_jwt_token
+```
+
+## Authentication Flow
+
+1. Register a new user or login with existing credentials
+2. Receive a JWT token in the response
+3. Include the token in subsequent requests as a Bearer token in the Authorization header
+4. Access protected routes based on user role
+
+## Environment Variables
+
+The following environment variables are required:
+
+- `DATABASE_URL`: PostgreSQL database connection string
+- `JWT_SECRET`: Secret key for JWT token generation and verification
