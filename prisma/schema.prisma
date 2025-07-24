@@ -11,11 +11,15 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  name      String?
-  role      String   @default("user")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                       String    @id @default(uuid())
+  email                    String    @unique
+  password                 String
+  name                     String?
+  role                     String    @default("user")
+  profilePhoto             String?
+  emailVerified            DateTime?
+  verificationToken        String?
+  verificationTokenExpiry  DateTime?
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
 }
