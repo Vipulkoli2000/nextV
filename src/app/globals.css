@@ -120,3 +120,40 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Force mobile-only layout */
+@layer utilities {
+  /* Override all responsive breakpoints to force mobile layout */
+  .mobile-only {
+    max-width: 428px !important;
+    margin: 0 auto !important;
+  }
+  
+  /* Force mobile viewport on all screen sizes */
+  html {
+    max-width: 428px;
+    margin: 0 auto;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Override Tailwind responsive classes to always use mobile version */
+  .lg\:hidden {
+    display: none !important;
+  }
+  
+  .lg\:translate-x-0 {
+    transform: translateX(-100%) !important;
+  }
+  
+  .lg\:static {
+    position: fixed !important;
+  }
+  
+  .lg\:z-auto {
+    z-index: 50 !important;
+  }
+  
+  .lg\:ml-0 {
+    margin-left: 0 !important;
+  }
+}

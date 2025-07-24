@@ -77,9 +77,9 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Mobile menu button */}
+      {/* Mobile menu button - always visible */}
       <button
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-white shadow-md hover:bg-gray-50"
+        className="fixed top-4 left-4 z-50 p-2 rounded-md bg-white shadow-md hover:bg-gray-50"
         onClick={() => setIsOpen(!isOpen)}
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -87,20 +87,19 @@ export default function Sidebar() {
         </svg>
       </button>
 
-      {/* Overlay for mobile */}
+      {/* Overlay for mobile - always active when sidebar is open */}
       {isOpen && (
         <div
-          className="lg:hidden fixed inset-0 z-40 bg-black bg-opacity-50"
+          className="fixed inset-0 z-40 bg-black bg-opacity-50"
           onClick={() => setIsOpen(false)}
         />
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar - always mobile behavior */}
       <div
         className={`
           fixed top-0 left-0 z-50 h-full w-64 bg-white border-r border-gray-200 shadow-sm
           transform transition-transform duration-300 ease-in-out
-          lg:translate-x-0 lg:static lg:z-auto
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
       >
@@ -109,7 +108,7 @@ export default function Sidebar() {
           <div className="flex items-center justify-between p-4 border-b border-gray-200">
             <h2 className="text-lg font-semibold text-gray-900">Next Dashboard</h2>
             <button
-              className="lg:hidden p-1 rounded-md hover:bg-gray-100"
+              className="p-1 rounded-md hover:bg-gray-100"
               onClick={() => setIsOpen(false)}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
