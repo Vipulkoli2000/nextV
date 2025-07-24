@@ -1,93 +1,198 @@
-import Image from "next/image";
-import Link from "next/link";
+'use client';
 
-export default function Home() {
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+
+export default function HomePage() {
+  const router = useRouter();
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [targetPage, setTargetPage] = useState('');
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const [showPlayButton, setShowPlayButton] = useState(false);
+  const [videoRef, setVideoRef] = useState<HTMLVideoElement | null>(null);
+
+  const handleNavigation = (path: string) => {
+    setTargetPage(path);
+    setIsTransitioning(true);
+    setTimeout(() => {
+      router.push(path);
+    }, 800);
+  };
+
+  // Override any parent styles
+  useEffect(() => {
+    // Force the body and html to not have any background
+    document.body.style.background = 'transparent';
+    document.documentElement.style.background = 'transparent';
+    
+    // Find and override any parent elements
+    const main = document.querySelector('main');
+    if (main) {
+      (main as HTMLElement).style.background = 'transparent';
+    }
+  }, []);
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
+    <div 
+      className="relative min-h-screen overflow-hidden"
+      style={{
+        background: 'linear-gradient(to bottom right, #60a5fa, #a855f7, #ec4899) !important',
+        backgroundColor: '#60a5fa !important',
+        width: '100vw',
+        height: '100vh',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0
+      }}
+    >
+      
+      {/* Video Background for all devices */}
+      <video
+        ref={(ref) => setVideoRef(ref)}
+        key="background-video"
+        autoPlay
+        loop
+        muted
+        playsInline
+        webkit-playsinline="true"
+        preload="auto"
+        className="absolute top-0 left-0 w-full h-full object-cover"
+        style={{ 
+          minWidth: '100%', 
+          minHeight: '100%',
+          zIndex: 1,
+          WebkitTransform: 'translateZ(0)',
+          transform: 'translateZ(0)'
+        }}
+        onLoadedMetadata={(e) => {
+          const video = e.target as HTMLVideoElement;
+          video.play().catch(err => {
+            console.log('Autoplay failed, showing play button:', err);
+            setShowPlayButton(true);
+          });
+        }}
+        onLoadedData={() => {
+          console.log('Video loaded successfully');
+          setVideoLoaded(true);
+        }}
+        onError={(e) => {
+          console.error('Video failed to load:', e);
+        }}
+      >
+        <source
+          src="https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+          type="video/mp4"
         />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+        Your browser does not support the video tag.
+      </video>
+      
+      {/* Play button for mobile if autoplay fails */}
+      {showPlayButton && (
+        <button
+          onClick={() => {
+            if (videoRef) {
+              videoRef.play();
+              setShowPlayButton(false);
+            }
+          }}
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 bg-white/80 rounded-full p-4 shadow-lg"
+        >
+          <svg className="w-12 h-12 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+          </svg>
+        </button>
+      )}
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <Link
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-indigo-600 text-white gap-2 hover:bg-indigo-700 font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="/login"
+      {/* Main Content */}
+      <AnimatePresence>
+        {!isTransitioning && (
+          <motion.div
+            className="relative z-20 min-h-screen flex flex-col justify-end pb-20"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -100 }}
+            transition={{ duration: 0.6 }}
           >
-            Sign In
-          </Link>
-          <Link
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="/register"
+            <div className="text-center">
+              <motion.h1
+                className="text-3xl font-bold text-white drop-shadow-lg"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                Welcome to AgriSkills
+              </motion.h1>
+              <motion.p
+                className="text-l text-white mb-12 drop-shadow-lg"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                Connecting farmers with technology
+              </motion.p>
+
+              <motion.div
+                className="space-y-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+              >
+              <div>
+                <Button
+                  onClick={() => handleNavigation('/login')}
+                  className="w-64 h-14 text-lg font-semibold bg-green-600 hover:bg-green-700 transform transition-all duration-300 hover:scale-105 shadow-lg"
+                >
+                  Sign In
+                </Button>
+              </div>
+              <div>
+                <Button
+                  onClick={() => handleNavigation('/register')}
+                  variant="outline"
+                  className="w-64 h-14 text-lg font-semibold border-2 border-green-600 text-green-600 hover:bg-green-50 transform transition-all duration-300 hover:scale-105 shadow-lg"
+                >
+                  Create Account
+                </Button>
+              </div>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Page Transition Overlay */}
+      <AnimatePresence>
+        {isTransitioning && (
+          <motion.div
+            className="fixed inset-0 z-50 bg-white"
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '-100%' }}
+            transition={{ duration: 0.8, ease: "easeInOut" }}
           >
-            Register
-          </Link>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+            <div className="min-h-screen flex items-center justify-center">
+              <motion.div
+                animate={{
+                  scale: [1, 1.2, 1],
+                  rotate: [0, 180, 360],
+                }}
+                transition={{
+                  duration: 1,
+                  repeat: Infinity,
+                }}
+              >
+                <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+                  <circle cx="30" cy="30" r="25" stroke="#16a34a" strokeWidth="4" strokeDasharray="70 30" />
+                </svg>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
