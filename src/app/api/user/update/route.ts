@@ -4,6 +4,9 @@ import jwt from 'jsonwebtoken';
 import { prisma } from '@/lib/prisma';
 import { handleFileUpload, deleteFile } from '@/lib/upload';
 
+// Force Node.js runtime to use jsonwebtoken
+export const runtime = 'nodejs';
+
 export async function PUT(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');

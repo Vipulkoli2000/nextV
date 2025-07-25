@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import jwt from 'jsonwebtoken';
 
+// Force Node.js runtime to use jsonwebtoken
+export const runtime = 'nodejs';
+
 export async function POST(request: NextRequest) {
   try {
     const { email, otp } = await request.json();

@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { verifyToken } from '@/lib/auth';
 
+// Force Node.js runtime to use jsonwebtoken
+export const runtime = 'nodejs';
+
 export async function GET(request: NextRequest) {
   try {
     // Get the token from the Authorization header
