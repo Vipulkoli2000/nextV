@@ -2,12 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Separator } from '@/components/ui/separator';
+import Image from 'next/image';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
 interface User {
@@ -56,7 +52,7 @@ export default function UpdateProfile() {
       if (parsedUser.profilePhoto) {
         setProfilePhotoUrl(`/api/images/${parsedUser.profilePhoto}`);
       }
-    } catch (error) {
+    } catch {
       router.push('/login');
     } finally {
       setLoading(false);
@@ -110,10 +106,6 @@ export default function UpdateProfile() {
     }
   };
 
-  const handleEdit = () => {
-    setIsEditing(true);
-    setMessage({ type: '', text: '' });
-  };
 
   const handleCancel = () => {
     setIsEditing(false);
@@ -205,7 +197,7 @@ export default function UpdateProfile() {
       } else {
         setMessage({ type: 'error', text: data.message || 'Failed to update profile' });
       }
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: 'An error occurred while updating profile' });
     } finally {
       setUpdateLoading(false);
@@ -240,7 +232,7 @@ export default function UpdateProfile() {
                 </Badge>
               </div>
             </div>
-          </div>
+          </CardHeader>
 
           {/* Content */}
           <div className="px-6 py-6">
@@ -264,10 +256,12 @@ export default function UpdateProfile() {
                 <div className="flex items-center space-x-6">
                   <div className="relative">
                     {previewUrl || profilePhotoUrl ? (
-                      <img
+                      <Image
                         src={previewUrl || profilePhotoUrl}
                         alt="Profile"
-                        className="w-24 h-24 rounded-full object-cover border-2 border-gray-300"
+                        width={96}
+                        height={96}
+                        className="rounded-full object-cover border-2 border-gray-300"
                       />
                     ) : (
                       <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center border-2 border-gray-300">
@@ -312,7 +306,7 @@ export default function UpdateProfile() {
                 </label>
                 <input
                   type="text"
-                  value={user.id}
+                  value={user?.id || ''}
                   readOnly
                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50 text-gray-500 cursor-not-allowed"
                 />
@@ -325,7 +319,7 @@ export default function UpdateProfile() {
                 </label>
                 <input
                   type="text"
-                  value={user.role}
+                  value={user?.role || ''}
                   readOnly
                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50 text-gray-500 cursor-not-allowed"
                 />
@@ -356,7 +350,7 @@ export default function UpdateProfile() {
                   <div className="border-t border-gray-200 pt-6">
                     <h3 className="text-lg font-medium text-gray-900 mb-4">Change Password</h3>
                     <p className="text-sm text-gray-600 mb-4">
-                      Leave password fields empty if you don't want to change your password.
+                      Leave password fields empty if you don&apos;t want to change your password.
                     </p>
                   </div>
 
@@ -443,7 +437,7 @@ export default function UpdateProfile() {
               )}
             </div>
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   );

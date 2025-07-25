@@ -91,7 +91,12 @@ export async function PUT(request: NextRequest) {
     }
 
     // Prepare update data
-    const updateData: any = {
+    interface UpdateData {
+      email: string;
+      profilePhoto?: string;
+      password?: string;
+    }
+    const updateData: UpdateData = {
       email,
     };
     

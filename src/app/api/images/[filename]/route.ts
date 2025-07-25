@@ -5,10 +5,10 @@ import path from 'path';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { filename: string } }
+  { params }: { params: Promise<{ filename: string }> }
 ) {
   try {
-    const { filename } = params;
+    const { filename } = await params;
     
     // Security: Basic filename validation to prevent path traversal
     if (!filename || filename.includes('..') || filename.includes('/') || filename.includes('\\')) {

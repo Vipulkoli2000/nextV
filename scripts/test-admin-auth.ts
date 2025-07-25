@@ -71,7 +71,13 @@ async function testAdminAuth() {
       const adminData = await adminResponse.json();
       console.log('✅ Admin endpoint successful!');
       console.log(`Found ${adminData.users.length} users:`);
-      adminData.users.forEach((user: any) => {
+      interface User {
+        id: string;
+        email: string;
+        name?: string;
+        role: string;
+      }
+      adminData.users.forEach((user: User) => {
         console.log(`  - ${user.name || 'N/A'} (${user.email}) - Role: ${user.role}`);
       });
     }

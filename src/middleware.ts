@@ -41,7 +41,14 @@ export function middleware(request: NextRequest) {
   const JWT_SECRET = process.env.JWT_SECRET || '83077b22cfbb2436782076383304e84a6bba45607837697f7b81c085f620eae9';
   
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    interface JWTPayload {
+      userId: string;
+      email: string;
+      role: string;
+      iat?: number;
+      exp?: number;
+    }
+    const decoded = jwt.verify(token, JWT_SECRET) as JWTPayload;
     
     // Check admin role for admin paths
     if (isAdminPath && decoded.role !== 'admin') {
@@ -52,7 +59,7 @@ export function middleware(request: NextRequest) {
     }
     
     return NextResponse.next();
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Invalid or expired token' },
       { status: 401 }

@@ -8,13 +8,10 @@ import { Button } from '@/components/ui/button';
 export default function HomePage() {
   const router = useRouter();
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [targetPage, setTargetPage] = useState('');
-  const [videoLoaded, setVideoLoaded] = useState(false);
   const [showPlayButton, setShowPlayButton] = useState(false);
   const [videoRef, setVideoRef] = useState<HTMLVideoElement | null>(null);
 
   const handleNavigation = (path: string) => {
-    setTargetPage(path);
     setIsTransitioning(true);
     setTimeout(() => {
       router.push(path);
@@ -77,7 +74,6 @@ export default function HomePage() {
         }}
         onLoadedData={() => {
           console.log('Video loaded successfully');
-          setVideoLoaded(true);
         }}
         onError={(e) => {
           console.error('Video failed to load:', e);

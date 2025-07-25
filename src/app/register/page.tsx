@@ -21,7 +21,6 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [step, setStep] = useState<'register' | 'verify'>('register'); // Two-step process
-  const [otpSent, setOtpSent] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
   const router = useRouter();
 
@@ -61,12 +60,11 @@ export default function RegisterPage() {
       if (response.ok) {
         setSuccess('Verification code sent to your email!');
         setStep('verify');
-        setOtpSent(true);
         startResendCooldown();
       } else {
         setError(data.error || 'Failed to send verification code');
       }
-    } catch (error) {
+    } catch {
       setError('Network error. Please try again.');
     } finally {
       setLoading(false);
@@ -112,7 +110,7 @@ export default function RegisterPage() {
       } else {
         setError(data.error || 'Invalid verification code');
       }
-    } catch (error) {
+    } catch {
       setError('Network error. Please try again.');
     } finally {
       setLoading(false);
@@ -160,7 +158,7 @@ export default function RegisterPage() {
       } else {
         setError(data.error || 'Failed to resend verification code');
       }
-    } catch (error) {
+    } catch {
       setError('Network error. Please try again.');
     } finally {
       setLoading(false);
@@ -182,7 +180,6 @@ export default function RegisterPage() {
   const handleBackToRegister = () => {
     setStep('register');
     setOtp('');
-    setOtpSent(false);
     setError('');
     setSuccess('');
   };
