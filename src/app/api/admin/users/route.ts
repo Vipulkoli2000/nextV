@@ -24,8 +24,21 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get all users (admin only)
+    // Get search query from URL parameters
+    const { searchParams } = new URL(request.url);
+    const searchQuery = searchParams.get('search');
+
+    // Build the where clause for search
+    const whereClause = searchQuery ? {
+      name: {
+        contains: searchQuery,
+        mode: 'insensitive' as const
+      }
+    } : {};
+
+    // Get users with optional search filter (admin only)
     const users = await prisma.user.findMany({
+      where: whereClause,
       select: {
         id: true,
         email: true,
@@ -34,6 +47,9 @@ export async function GET(request: NextRequest) {
         createdAt: true,
         updatedAt: true,
       },
+      orderBy: {
+        createdAt: 'desc'
+      }
     });
 
     return NextResponse.json({ users });
