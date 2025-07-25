@@ -15,8 +15,17 @@ interface Topic {
   };
 }
 
+interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export default function AdminTopics() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [topics, setTopics] = useState<Topic[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

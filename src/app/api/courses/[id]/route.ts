@@ -4,7 +4,7 @@ import { verifyToken } from '@/lib/auth';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get the token from the Authorization header
@@ -27,7 +27,7 @@ export async function GET(
       );
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Get course with topic information
     const course = await prisma.course.findUnique({

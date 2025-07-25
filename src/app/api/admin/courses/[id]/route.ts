@@ -4,7 +4,7 @@ import { verifyToken } from '@/lib/auth';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get the token from the Authorization header
@@ -27,7 +27,7 @@ export async function GET(
       );
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Get course with topic
     const course = await prisma.course.findUnique({
@@ -61,7 +61,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get the token from the Authorization header
@@ -84,7 +84,7 @@ export async function PUT(
       );
     }
 
-    const { id } = params;
+    const { id } = await params;
     const { title, description, content, topicId, isActive } = await request.json();
 
     if (!title || title.trim() === '') {
@@ -159,7 +159,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get the token from the Authorization header
@@ -182,7 +182,7 @@ export async function DELETE(
       );
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Check if course exists
     const existingCourse = await prisma.course.findUnique({
