@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get the token from the Authorization header
@@ -28,7 +28,7 @@ export async function GET(
       );
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Get the specific user by ID
     const user = await prisma.user.findUnique({
@@ -64,7 +64,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get the token from the Authorization header
@@ -87,7 +87,7 @@ export async function PUT(
       );
     }
 
-    const { id } = params;
+    const { id } = await params;
     const { email, password } = await request.json();
 
     // Check if user exists
@@ -117,7 +117,7 @@ export async function PUT(
     }
 
     // Prepare update data
-    const updateData: any = { email };
+    const updateData: { email: string; password?: string } = { email };
 
     // Hash password if provided
     if (password && password.trim() !== '') {
@@ -151,7 +151,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get the token from the Authorization header
@@ -174,7 +174,7 @@ export async function DELETE(
       );
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Check if user exists
     const existingUser = await prisma.user.findUnique({

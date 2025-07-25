@@ -6,13 +6,13 @@ import { z } from 'zod';
 const createCourseSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200, 'Title must be less than 200 characters'),
   description: z.string().optional(),
-  content: z.string().optional(),
+  content: z.string().min(1, 'Content is required'),
   isActive: z.boolean().default(true),
 });
 
 export async function POST(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication and admin role
@@ -22,12 +22,12 @@ export async function POST(
     }
 
     const token = authHeader.substring(7);
-    const decoded = verifyToken(token);
+    const decoded = verifyToken(token) as { role: string } | null;
     if (!decoded || decoded.role !== 'admin') {
       return NextResponse.json({ error: 'Forbidden - Admin access required' }, { status: 403 });
     }
 
-    const { params } = await context;
+    const params = await context.params;
     const topicId = params.id;
 
     // Verify topic exists
@@ -66,7 +66,7 @@ export async function POST(
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Validation failed', details: error.errors },
+        { error: 'Validation failed', details: error.format() },
         { status: 400 }
       );
     }

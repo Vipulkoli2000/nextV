@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 
 interface Course {
@@ -24,8 +24,17 @@ interface Topic {
   courses: Course[];
 }
 
+interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export default function AdminTopicDetail() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [topic, setTopic] = useState<Topic | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -52,24 +61,7 @@ export default function AdminTopicDetail() {
   const params = useParams();
   const topicId = params.id as string;
 
-  useEffect(() => {
-    const userData = localStorage.getItem('user');
-    const token = localStorage.getItem('token');
-    
-    if (userData && token) {
-      const parsedUser = JSON.parse(userData);
-      if (parsedUser.role !== 'admin') {
-        router.push('/dashboard');
-      } else {
-        setUser(parsedUser);
-        fetchTopic(token);
-      }
-    } else {
-      router.push('/login');
-    }
-  }, [router, topicId]);
-
-  const fetchTopic = async (token: string) => {
+  const fetchTopic = useCallback(async (token: string) => {
     try {
       const response = await fetch(`/api/admin/topics/${topicId}`, {
         headers: {
@@ -93,7 +85,24 @@ export default function AdminTopicDetail() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [topicId]);
+
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    const token = localStorage.getItem('token');
+    
+    if (userData && token) {
+      const parsedUser = JSON.parse(userData);
+      if (parsedUser.role !== 'admin') {
+        router.push('/dashboard');
+      } else {
+        setUser(parsedUser);
+        fetchTopic(token);
+      }
+    } else {
+      router.push('/login');
+    }
+  }, [router, topicId, fetchTopic]);
 
   const handleEditTopic = async () => {
     if (!editForm.title.trim()) return;
@@ -685,6 +694,16 @@ export default function AdminTopicDetail() {
                     required
                   />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">YouTube URL (optional)</label>
+                  <input
+                    type="url"
+                    value={courseForm.youtubeUrl}
+                    onChange={(e) => setCourseForm({ ...courseForm, youtubeUrl: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="Enter YouTube video URL"
+                  />
+                </div>
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Description (optional)</label>
@@ -754,7 +773,7 @@ export default function AdminTopicDetail() {
               
               <div className="mb-6">
                 <p className="text-gray-600 mb-4">
-                  Are you sure you want to delete the course "{selectedCourse.title}"? This action cannot be undone.
+                  Are you sure you want to delete the course &ldquo;{selectedCourse.title}&rdquo;? This action cannot be undone.
                 </p>
                 <div className="bg-red-50 border border-red-200 rounded-lg p-3">
                   <p className="text-red-800 text-sm">

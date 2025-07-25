@@ -18,7 +18,6 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchLoading, setSearchLoading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -60,7 +59,6 @@ export default function AdminDashboard() {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
-      setSearchLoading(false);
     }
   };
 
@@ -68,14 +66,13 @@ export default function AdminDashboard() {
     const token = localStorage.getItem('token');
     if (!token) return;
 
-    setSearchQuery(query);
-    if (query.trim() === '') {
-      // If search is empty, fetch all users
-      fetchUsers(token);
-    } else {
-      setSearchLoading(true);
-      fetchUsers(token, query.trim());
-    }
+      setSearchQuery(query);
+      if (query.trim() === '') {
+        // If search is empty, fetch all users
+        fetchUsers(token);
+      } else {
+        fetchUsers(token, query.trim());
+      }
   };
 
   const clearSearch = () => {
@@ -84,16 +81,6 @@ export default function AdminDashboard() {
     
     setSearchQuery('');
     fetchUsers(token);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
   };
 
   if (!user) {
@@ -316,7 +303,7 @@ export default function AdminDashboard() {
                         </td>
                       </tr>
                     ) : (
-                      users.map((u, index) => (
+                      users.map((u) => (
                         <tr 
                           key={u.id} 
                           className="hover:bg-gray-50 cursor-pointer transition-all duration-150 hover:shadow-md"
