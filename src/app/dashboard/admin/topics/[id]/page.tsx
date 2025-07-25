@@ -8,6 +8,7 @@ interface Course {
   title: string;
   description: string | null;
   content: string;
+  youtubeUrl: string | null;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -42,6 +43,7 @@ export default function AdminTopicDetail() {
     title: '',
     description: '',
     content: '',
+    youtubeUrl: '',
     isActive: true
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -155,6 +157,7 @@ export default function AdminTopicDetail() {
         title: '',
         description: '',
         content: '',
+        youtubeUrl: '',
         isActive: true
       });
     } catch (err) {
@@ -196,6 +199,7 @@ export default function AdminTopicDetail() {
         title: '',
         description: '',
         content: '',
+        youtubeUrl: '',
         isActive: true
       });
     } catch (err) {
@@ -203,6 +207,12 @@ export default function AdminTopicDetail() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const getYoutubeVideoId = (url: string): string | null => {
+    const regex = /^.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regex);
+    return (match && match[1].length === 11) ? match[1] : null;
   };
 
   const handleDeleteCourse = async () => {
@@ -241,6 +251,7 @@ export default function AdminTopicDetail() {
       title: course.title,
       description: course.description || '',
       content: course.content,
+      youtubeUrl: course.youtubeUrl || '',
       isActive: course.isActive
     });
     setShowEditCourseModal(true);
@@ -506,6 +517,31 @@ export default function AdminTopicDetail() {
                       <p className="text-gray-600 text-sm mb-4 line-clamp-2">{course.description}</p>
                     )}
                     
+                    {course.youtubeUrl && (
+                      <div className="mb-4">
+                        <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                          {(() => {
+                            const videoId = getYoutubeVideoId(course.youtubeUrl);
+                            return videoId ? (
+                              <iframe
+                                src={`https://www.youtube.com/embed/${videoId}`}
+                                title="YouTube video player"
+                                frameBorder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowFullScreen
+                                className="w-full h-full"
+                              ></iframe>
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-red-50">
+                                <p className="text-red-600 text-sm">Invalid YouTube URL</p>
+                              </div>
+                            );
+                          })()
+                        }
+                        </div>
+                      </div>
+                    )}
+                    
                     <div className="bg-white rounded-lg p-3 mb-4">
                       <h4 className="text-xs font-medium text-gray-500 mb-1">CONTENT PREVIEW</h4>
                       <p className="text-sm text-gray-700">{truncateContent(course.content)}</p>
@@ -558,6 +594,16 @@ export default function AdminTopicDetail() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                     placeholder="Enter course title"
                     required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">YouTube URL (optional)</label>
+                  <input
+                    type="url"
+                    value={courseForm.youtubeUrl}
+                    onChange={(e) => setCourseForm({ ...courseForm, youtubeUrl: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="Enter YouTube video URL"
                   />
                 </div>
                 
