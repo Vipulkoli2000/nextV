@@ -3,6 +3,9 @@ import { prisma } from '@/lib/prisma';
 import { hashPassword } from '@/lib/auth';
 import { sendEmail, generateOTP, getOTPEmailTemplate } from '@/lib/email';
 
+// Force Node.js runtime to use jsonwebtoken
+export const runtime = 'nodejs';
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
